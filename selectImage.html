@@ -1,0 +1,41 @@
+<div>
+	CustomVision by MF 0.0.2 - Imagem Selecionada
+</div>
+<p></p>
+<div>
+	<input id="image-selector" type="file">
+</div>
+<p></p>
+
+<div>
+	<button id="predict-button">Predict</button>
+</div>
+<p></p>
+<div>
+	<ol id="prediction-list"></ol>
+</div>
+<div>
+	<img id="selected-image" > 
+</div>
+<p></p>
+
+
+<p id="resultado"></p>
+
+<script src="lib/tf.min.js"></script>
+<script src="lib/jquery-3.3.1.slim.min.js"></script>
+<script src="lib/custom-vision.js"></script>
+<script src="js/target_classes.js"></script>
+<script src="js/predict.js"></script > 
+
+<script type="text/javascript">
+
+    async function init() {
+		//document.getElementById("resultado").innerHTML = "Clicou em resultado";
+		model = await tf.loadGraphModel('model/model.json');
+		
+    }
+	
+
+</script>
+
