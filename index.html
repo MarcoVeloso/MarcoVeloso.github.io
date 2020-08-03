@@ -11,13 +11,20 @@ div {
 ol {
   width: 200px;
 }
+
+.greyscale {
+  filter: grayscale(100%);
+}
 </style>
 
 <div>CustomVision by MF 0.0.5 - Camera</div>
-<div id="webcam-container"></div>
 <div>
-  <button type="button" onclick="photo()">Foto!</button>
-	<ol id="prediction-list"></ol>
+  <div id="webcam-container"></div>
+  <h3><ol id="prediction-list"></ol></h3>
+</div>
+<div>
+  <button type="button" onclick="photo()">Foto em Cores</button>
+  <button type="button" onclick="photo(true)">Foto em Preto e Branco</button>
 </div>
 <canvas id="photo-canvas"></canvas> 
 
@@ -47,12 +54,16 @@ ol {
     window.requestAnimationFrame(loop);
   }
 	
-  async function photo() {
+  async function photo(greyscale=false) {
     canvas = document.getElementById("photo-canvas");
     canvas.width = width;
     canvas.height = height;
+
+    if (greyscale)
+      canvas.classList.add("greyscale");
+
     context = canvas.getContext('2d');
-    context.drawImage(webcam.canvas, 0, 0, width, height);
+    context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
     await predict_camera(model, webcam.canvas);
   }
 

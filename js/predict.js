@@ -56,7 +56,7 @@ async function predict_imagemfixa(model, imageID) {
 
 	list.empty();
 	top5.forEach(function (p) {
-		list.append(`Predição: <li>${p.className}: ${p.probability.toFixed(6)}</li>`);
+		list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
 	});	
 }
 
@@ -68,7 +68,7 @@ async function predict_camera(model, image) {
 	list.empty();
 	top5.forEach(function (p) {
 		if (p.probability > 0.3)
-			list.append(`Predição: <li>${p.className}: ${p.probability.toFixed(6)}</li>`);
+			list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
 	});	
 }
 
