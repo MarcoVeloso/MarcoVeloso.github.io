@@ -9,7 +9,12 @@ div {
 }
 
 ol {
-  width: 200px;
+  width: 300px;
+}
+
+button {
+  height: 50px;
+  margin: 5px;
 }
 
 .greyscale {
@@ -17,7 +22,7 @@ ol {
 }
 </style>
 
-<div>CustomVision by MF 0.0.5 - Camera</div>
+<div>CustomVision by MF 0.1.0 - Camera - Online/Local Models</div>
 <div>
   <div id="webcam-container"></div>
   <h3><ol id="prediction-list"></ol></h3>
@@ -34,7 +39,7 @@ ol {
 <script src="js/predict.js"></script > 
 
 <script type="text/javascript">
-  let webcam;
+  let webcam, model, list;
   let width=640, height=360;
 
   $( document ).ready(async function () {
@@ -46,6 +51,7 @@ ol {
     window.requestAnimationFrame(loop);
 
     document.getElementById("webcam-container").appendChild(webcam.canvas);
+    list = $("#prediction-list");
   });
 
   async function loop() {
@@ -61,10 +67,15 @@ ol {
 
     if (greyscale)
       canvas.classList.add("greyscale");
+    else
+      canvas.classList.remove("greyscale");  
+
+    list.empty();
 
     context = canvas.getContext('2d');
     context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
-    await predict_camera(model, webcam.canvas);
+    await predict_online(canvas);
+    await predict_local(model, webcam.canvas);
   }
 
 </script>

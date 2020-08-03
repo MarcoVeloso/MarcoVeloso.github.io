@@ -15,8 +15,6 @@ TARGET_CLASSES = {
 
 IMAGENS = ["nota2","nota5","nota10","nota20","nota50","nota100"];
 
-let model;
-
 async function load_model() {
     console.log( "Loading model..." );
     model = await tf.loadGraphModel('model/model.json');
@@ -48,6 +46,46 @@ async function predict(model, image) {
 	return top5;
 }
 
+async function predict_online(canvas) {
+
+	canvas.toBlob(function(blob){
+
+		let xhr = new XMLHttpRequest();
+		xhr.open('POST', 'https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/d723b35b-ce99-4003-9d3e-6e442c9eb020/classify/iterations/Iteration8/image');
+		xhr.setRequestHeader("Content-Type", "application/octet-stream");
+		xhr.setRequestHeader("Prediction-Key", '35e4bf2c77a04d8ca756a27156393477');
+		xhr.send(blob);
+	
+		xhr.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				predictions = JSON.parse(this.responseText).predictions;
+
+				predictions.sort(function (a, b) {
+					return b.probability - a.probability;
+				});
+
+				console.log(predictions);
+				
+				predictions.forEach(function (p) {
+					if (p.probability > 0.1)
+						list.append(`<li>Online model: ${p.tagName}: ${p.probability.toFixed(6)}</li>`);
+				});	
+			}
+		};
+
+	},'image/jpg');	
+
+}
+
+async function predict_local(model, image) {
+	let top5 = await predict(model, image);
+
+	top5.forEach(function (p) {
+		if (p.probability > 0.1)
+			list.append(`<li>Local model: ${p.className}: ${p.probability.toFixed(6)}</li>`);
+	});	
+}
+
 async function predict_imagemfixa(model, imageID) {
 	let image = $('#' + imageID).get(0);
 	let list = $("#" + imageID + "_pred");
@@ -57,18 +95,6 @@ async function predict_imagemfixa(model, imageID) {
 	list.empty();
 	top5.forEach(function (p) {
 		list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
-	});	
-}
-
-async function predict_camera(model, image) {
-	let list = $("#prediction-list");
-	
-	let top5 = await predict(model, image);
-
-	list.empty();
-	top5.forEach(function (p) {
-		if (p.probability > 0.3)
-			list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
 	});	
 }
 
