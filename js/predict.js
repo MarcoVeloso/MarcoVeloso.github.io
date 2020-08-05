@@ -1,49 +1,114 @@
-TARGET_CLASSES = {
-	0: "10_g1",
-	1: "10_g2",
-	2: "100_g1",
-	3: "100_g2",
-	4: "2_g1",
-	5: "2_g2",
-	6: "20_g1",
-	7: "20_g2",
-	8: "5_g1",
-	9: "5_g2",
-   10: "50_g1",
-   11: "50_g2"
-};
+let TARGET_CLASSES = {};
 
-IMAGENS = ["nota2","nota5","nota10","nota20","nota50","nota100"];
+async function load_target_classes() {
+	await fetch("model/labels.txt")
+		.then(res => res.text())
+		.then(txt => {
+			texts = txt.split('\r\n');
+			for (text in texts)
+				TARGET_CLASSES[text] = texts[text];
+		});
+}
 
 async function load_model() {
-    console.log( "Loading model..." );
+	console.log( "Loading model..." );
+	await load_target_classes();
     model = await tf.loadGraphModel('model/model.json');
     console.log( "Model loaded." );	
 }
 
-async function predict(model, image) {
-	
+function preprocess(image, obj_detect=false) {
+	let input_size = 224;
+
+	if (obj_detect)
+		input_size = 416;
+
 	let tensor = tf.browser.fromPixels(image, 3)
-		.resizeNearestNeighbor([224, 224]) // change the image size
+		.resizeNearestNeighbor([input_size, input_size]) 
 		.expandDims()
 		.toFloat()
-		.reverse(-1); // RGB -> BGR
+		.reverse(-1); 
+
+	return tensor;
+}
+
+async function postprocess(outputs) {
+	function logistic(x) {
+		if (x > 0) {
+		    return (1 / (1 + Math.exp(-x)));
+		} else {
+		    const e = Math.exp(x);
+		    return e / (1 + e);
+		}
+	}
+
+	const ANCHORS = [0.573, 0.677, 1.87, 2.06, 3.34, 5.47, 7.88, 3.53, 9.77, 9.17];
+	const num_anchor = ANCHORS.length / 2;
+	const channels = outputs[0][0][0].length;
+	const height = outputs[0].length;
+	const width = outputs[0][0].length;
+
+	const num_class = channels / num_anchor - 5;
+
+	let boxes = [];
+	let scores = [];
+	let classes = [];
+
+	for (var grid_y = 0; grid_y < height; grid_y++) {
+		for (var grid_x = 0; grid_x < width; grid_x++) {
+			let offset = 0;
+
+			for (var i = 0; i < num_anchor; i++) {
+				let x = (logistic(outputs[0][grid_y][grid_x][offset++]) + grid_x) / width;
+				let y = (logistic(outputs[0][grid_y][grid_x][offset++]) + grid_y) / height;
+				let w = Math.exp(outputs[0][grid_y][grid_x][offset++]) * ANCHORS[i * 2] / width;
+				let h = Math.exp(outputs[0][grid_y][grid_x][offset++]) * ANCHORS[i * 2 + 1] / height;
+
+				let objectness = tf.scalar(logistic(outputs[0][grid_y][grid_x][offset++]));
+				let class_probabilities = tf.tensor1d(outputs[0][grid_y][grid_x].slice(offset, offset + num_class)).softmax();
+				offset += num_class;
+
+				class_probabilities = class_probabilities.mul(objectness);
+				let max_index = class_probabilities.argMax();
+
+				boxes.push([x - w / 2, y - h / 2, x + w / 2, y + h / 2]);
+				scores.push(class_probabilities.max().dataSync()[0]);
+				classes.push(max_index.dataSync()[0]);
+			}
+		}
+	}
+
+	boxes = tf.tensor2d(boxes);
+	scores = tf.tensor1d(scores);
+	classes = tf.tensor1d(classes);
+
+	const selected_indices = await tf.image.nonMaxSuppressionAsync(boxes, scores, 10);
+	return [await boxes.gather(selected_indices).array(), await scores.gather(selected_indices).array(), await classes.gather(selected_indices).array()];
+}
+
+async function predict(model, image) {
+	let tensor = preprocess(image, true);
 		
-	let predictions = await model.predict(tensor).data();
-	
+	let predictions = await model.predict(tensor);
+
 	console.log(predictions);
+
+	return predictions;
 	
-	let top5 = Array.from(predictions)
-		.map(function (p, i) { // this is Array.map
-			return {
-				probability: p,
-				className: TARGET_CLASSES[i] // we are selecting the value from the obj
-			};
-		}).sort(function (a, b) {
-			return b.probability - a.probability;
-		}).slice(0, 2);	
+	// pred = await postprocess(await predictions.array());
+	
+	
+	// let top5 = Array.from(predictions)
+	// 	.map(function (p, i) { // this is Array.map
+	// 		return {
+	// 			probability: p,
+	// 			className: TARGET_CLASSES[i] // we are selecting the value from the obj
+	// 		};
+	// 	}).sort(function (a, b) {
+	// 		return b.probability - a.probability;
+	// 	}).slice(0, 2);	
 		
-	return top5;
+	// return top5;
 }
 
 async function predict_online(canvas) {
@@ -86,31 +151,16 @@ async function predict_local(model, image) {
 	});	
 }
 
-async function predict_imagemfixa(model, imageID) {
-	let image = $('#' + imageID).get(0);
-	let list = $("#" + imageID + "_pred");
-	
-	let top5 = await predict(model, image);
+async function predict_obj_detect(model, image) {
+	let predictions = await predict(model, image);
 
-	list.empty();
-	top5.forEach(function (p) {
-		list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
-	});	
+	preds = await postprocess(await predictions.array());	
+
+	console.log(preds);
+
+	for (pred in preds[1])
+		if (preds[1][pred] > 0.1)
+			list.append(`<li>Local Obj Detect: ${TARGET_CLASSES[preds[2][pred]]}: ${preds[1][pred].toFixed(6)}</li>`);
+
 }
 
-$("#image-selector").change(function () {
-	let reader = new FileReader();
-	reader.onload = function () {
-		let dataURL = reader.result;
-		$("#selected-image").attr("src", dataURL);
-		$("#prediction-list").empty();
-	}
-	
-	let file = $("#image-selector").prop('files')[0];
-	reader.readAsDataURL(file);
-});
-
-$("#predict-button").click(async function () {
-	for (i in imagens)
-		predict_imagemfixa(model, imagens[i]);
-});

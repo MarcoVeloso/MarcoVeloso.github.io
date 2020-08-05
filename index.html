@@ -33,8 +33,9 @@ button {
 </div>
 <canvas id="photo-canvas"></canvas> 
 
-<script src="lib/tf.min.js"></script>
+
 <script src="lib/jquery-3.3.1.slim.min.js"></script>
+<script src="lib/tf.min.js"></script>
 <script src="lib/teachablemachine-image.min.js"></script>
 <script src="js/predict.js"></script > 
 
@@ -74,8 +75,8 @@ button {
 
     context = canvas.getContext('2d');
     context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
-    await predict_online(canvas);
-    await predict_local(model, webcam.canvas);
+    //await predict_online(canvas);
+    await predict_obj_detect(model, webcam.canvas);
   }
 
 </script>
