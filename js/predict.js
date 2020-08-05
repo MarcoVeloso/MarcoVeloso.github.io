@@ -161,9 +161,7 @@ async function predict_obj_detect(model, image) {
 
 	for (pred in preds[1])
 		if (preds[1][pred] > 0.01)
-			list.append(`<li>Local Obj Detect: ${preds[2][pred]}: ${preds[1][pred].toFixed(6)}</li>`);
-
-			// list.append(`<li>Local Obj Detect: ${TARGET_CLASSES[preds[2][pred]]}: ${preds[1][pred].toFixed(6)}</li>`);
+			list.append(`<li>Local Obj Detect: ${TARGET_CLASSES[preds[2][pred]]}(${preds[2][pred]}): ${preds[1][pred].toFixed(6)}</li>`);
 
 }
 
