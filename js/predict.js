@@ -13,6 +13,7 @@ async function load_target_classes() {
 async function load_model() {
 	console.log( "Loading model..." );
 	await load_target_classes();
+	console.log( TARGET_CLASSES );
     model = await tf.loadGraphModel('model/model.json');
     console.log( "Model loaded." );	
 }
@@ -159,8 +160,10 @@ async function predict_obj_detect(model, image) {
 	console.log(preds);
 
 	for (pred in preds[1])
-		if (preds[1][pred] > 0.1)
-			list.append(`<li>Local Obj Detect: ${TARGET_CLASSES[preds[2][pred]]}: ${preds[1][pred].toFixed(6)}</li>`);
+		if (preds[1][pred] > 0.01)
+			list.append(`<li>Local Obj Detect: ${preds[2][pred]}: ${preds[1][pred].toFixed(6)}</li>`);
+
+			// list.append(`<li>Local Obj Detect: ${TARGET_CLASSES[preds[2][pred]]}: ${preds[1][pred].toFixed(6)}</li>`);
 
 }
 
