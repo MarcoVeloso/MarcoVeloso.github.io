@@ -1,4 +1,9 @@
-let TARGET_CLASSES = {};
+let TARGET_CLASSES = {
+	0: "100_g2_frente",
+	1: "100_g2_verso",
+	2: "2_g2_frente",
+	3: "2_g2_verso"
+};
 
 async function load_target_classes() {
 	await fetch("model/labels.txt")
@@ -12,7 +17,7 @@ async function load_target_classes() {
 
 async function load_model() {
 	console.log( "Loading model..." );
-	await load_target_classes();
+	//await load_target_classes();
 	console.log( TARGET_CLASSES );
     model = await tf.loadGraphModel('model/model.json');
     console.log( "Model loaded." );	
