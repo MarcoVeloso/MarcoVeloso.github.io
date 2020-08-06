@@ -23,6 +23,13 @@ async function load_model() {
     console.log( "Model loaded." );	
 }
 
+function print_predicts(target_class, probability, threshold=0.1){
+	if (probability >= threshold)
+		list.append(`<li>${target_class}: ${probability.toFixed(3)}</li>`);
+	else
+		list.append(`<li>Indefinido</li>`);
+}
+
 function preprocess(image, obj_detect=false) {
 	let input_size = 224;
 
@@ -165,8 +172,7 @@ async function predict_obj_detect(model, image) {
 	console.log(preds);
 
 	for (pred in preds[1])
-		if (preds[1][pred] > 0.1)
-			list.append(`<li>Local Obj Detect: ${TARGET_CLASSES[preds[2][pred]]}(${preds[2][pred]}): ${preds[1][pred].toFixed(6)}</li>`);
+		print_predicts(TARGET_CLASSES[preds[2][pred]], preds[1][pred]);
 
 }
 
