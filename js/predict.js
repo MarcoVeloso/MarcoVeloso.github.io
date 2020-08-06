@@ -26,6 +26,7 @@ async function load_model() {
 function print_predicts(target_class, probability, threshold=0.1){
 	if (probability >= threshold)
 		list.append(`<li>${target_class}: ${probability.toFixed(3)}</li>`);
+		//list.append(`<li>${target_class}</li>`);
 	else
 		list.append(`<li>Indefinido</li>`);
 }
@@ -165,12 +166,17 @@ async function predict_local(model, image) {
 }
 
 async function predict_obj_detect(model, image) {
+	list.append(`<li>Reconhecimento da nota em andamento...</li>`);
+
 	let predictions = await predict(model, image);
 
 	preds = await postprocess(await predictions.array());	
 
+	list.empty()
+
 	console.log(preds);
 
+	//print_predicts(TARGET_CLASSES[preds[2][0]], preds[1][0]);
 	for (pred in preds[1])
 		print_predicts(TARGET_CLASSES[preds[2][pred]], preds[1][pred]);
 
