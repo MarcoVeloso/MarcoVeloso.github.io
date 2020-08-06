@@ -2,3 +2,5 @@
 100_g2_verso
 2_g2_frente
 2_g2_verso
+5_g2_frente
+5_g2_verso

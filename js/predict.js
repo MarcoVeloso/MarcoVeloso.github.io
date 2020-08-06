@@ -2,31 +2,21 @@ let TARGET_CLASSES = {
 	0: "100_g2_frente",
 	1: "100_g2_verso",
 	2: "2_g2_frente",
-	3: "2_g2_verso"
+	3: "2_g2_verso",
+	4: "5_g2_frente",
+	5: "5_g2_verso"
 };
-
-async function load_target_classes() {
-	await fetch("model/labels.txt")
-		.then(res => res.text())
-		.then(txt => {
-			texts = txt.split('\r\n');
-			for (text in texts)
-				TARGET_CLASSES[text] = texts[text];
-		});
-}
 
 async function load_model() {
 	console.log( "Loading model..." );
-	//await load_target_classes();
-	console.log( TARGET_CLASSES );
     model = await tf.loadGraphModel('model/model.json');
     console.log( "Model loaded." );	
 }
 
 function print_predicts(target_class, probability, threshold=0.1){
 	if (probability >= threshold)
-		list.append(`<li>${target_class}: ${probability.toFixed(3)}</li>`);
-		//list.append(`<li>${target_class}</li>`);
+		//list.append(`<li>${target_class}: ${probability.toFixed(3)}</li>`);
+		list.append(`<li>${target_class}</li>`);
 	else
 		list.append(`<li>Indefinido</li>`);
 }
@@ -166,19 +156,20 @@ async function predict_local(model, image) {
 }
 
 async function predict_obj_detect(model, image) {
+	list.empty();
 	list.append(`<li>Reconhecimento da nota em andamento...</li>`);
 
 	let predictions = await predict(model, image);
 
 	preds = await postprocess(await predictions.array());	
 
-	list.empty()
+	list.empty();
 
 	console.log(preds);
 
-	//print_predicts(TARGET_CLASSES[preds[2][0]], preds[1][0]);
-	for (pred in preds[1])
-		print_predicts(TARGET_CLASSES[preds[2][pred]], preds[1][pred]);
+	print_predicts(TARGET_CLASSES[preds[2][0]], preds[1][0]);
+	// for (pred in preds[1])
+	// 	print_predicts(TARGET_CLASSES[preds[2][pred]], preds[1][pred]);
 
 }
 
