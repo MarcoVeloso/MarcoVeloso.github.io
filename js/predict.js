@@ -167,14 +167,15 @@ async function predict_obj_detect(model, image) {
 
 	console.log(preds);
 
-	if (preds[1][0] > 0.1)
+	if (preds[1][0] > 0.1) {
 		if (preds[2][0] == preds[2][1])
 			list.append(`<li>${TARGET_CLASSES[preds[2][0]]}</li>`);
 		else
 			list.append(`<li>Indefinido</li>`);
+	}
 	else
 		list.append(`<li>Indefinido</li>`);	
-		
+
 	// for (pred in preds[1])
 	// 	print_predicts(TARGET_CLASSES[preds[2][pred]], preds[1][pred]);
 
