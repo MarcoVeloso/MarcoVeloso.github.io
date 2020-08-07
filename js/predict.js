@@ -172,7 +172,9 @@ async function predict_obj_detect(model, image) {
 			list.append(`<li>${TARGET_CLASSES[preds[2][0]]}</li>`);
 		else
 			list.append(`<li>Indefinido</li>`);
-			
+	else
+		list.append(`<li>Indefinido</li>`);	
+		
 	// for (pred in preds[1])
 	// 	print_predicts(TARGET_CLASSES[preds[2][pred]], preds[1][pred]);
 
