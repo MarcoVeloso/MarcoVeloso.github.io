@@ -146,6 +146,96 @@ async function predict_online(canvas) {
 
 }
 
+async function predict_ocr(canvas) {
+
+	// canvas.toBlob(function(blob){
+
+		var blob = canvas.toDataURL();
+
+        $.ajax({
+            url: 'https://southcentralus.api.cognitive.microsoft.com/vision/v3.0/read/analyze',
+
+            beforeSend: function(jqXHR){
+                jqXHR.setRequestHeader("Content-Type","application/octet-stream");
+                jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", "35e4bf2c77a04d8ca756a27156393477");
+            },
+
+            type: "POST",
+            data: blob
+		})
+        .done(function(data, textStatus, jqXHR) {
+
+			console.log('done');
+
+            setTimeout(function () {
+				var operationLocation = jqXHR.getResponseHeader("Operation-Location");
+				
+				console.log(operationLocation);
+
+                $.ajax({
+                    url: operationLocation,
+
+                    beforeSend: function(jqXHR){
+                        jqXHR.setRequestHeader("Content-Type","application/json");
+                        jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", "35e4bf2c77a04d8ca756a27156393477");
+                    },
+
+                    type: "GET"
+                })
+                .done(function(data) {
+                    console.log(data);
+                });
+
+            }, 5000);
+        });	
+
+		// let xhr = new XMLHttpRequest();
+		// xhr.open('POST', 'https://southcentralus.api.cognitive.microsoft.com/vision/v3.0/read/analyze');
+		// xhr.setRequestHeader("Content-Type", "application/octet-stream");
+		// xhr.setRequestHeader("Ocp-Apim-Subscription-Key", '35e4bf2c77a04d8ca756a27156393477');
+		// xhr.send(blob);
+	
+		// xhr.onreadystatechange = function() {
+
+		// 	let operationLocation = this.getResponseHeader("Operation-Location");
+
+        //     setTimeout(function () {
+
+		// 		console.log(operationLocation);
+
+		// 		let xhr2 = new XMLHttpRequest();
+		// 		xhr2.open('GET', operationLocation);
+		// 		xhr2.setRequestHeader("Content-Type", "application/json");
+		// 		xhr2.setRequestHeader("Ocp-Apim-Subscription-Key", '35e4bf2c77a04d8ca756a27156393477');
+	
+		// 		xhr2.onreadystatechange = function(data) {
+		// 			console.log(data);
+		// 			if (this.readyState == 4 && this.status == 200) {
+	
+		// 				// console.log(this);
+		// 				// predictions = JSON.parse(this.responseText).predictions;
+		
+		// 				// predictions.sort(function (a, b) {
+		// 				// 	return b.probability - a.probability;
+		// 				// });
+		
+		// 				// console.log(predictions);
+						
+		// 				// predictions.forEach(function (p) {
+		// 				// 	if (p.probability > 0.1)
+		// 				// 		list.append(`<li>Online model: ${p.tagName}: ${p.probability.toFixed(6)}</li>`);
+		// 				// });	
+		// 			}
+		// 		}
+
+        //     }, 5000);
+
+		// };
+
+	// },'image/jpg');	
+
+}
+
 async function predict_local(model, image) {
 	let top5 = await predict(model, image);
 
