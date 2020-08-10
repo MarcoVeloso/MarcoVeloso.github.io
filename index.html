@@ -22,7 +22,7 @@ button {
 }
 </style>
 
-<div>CustomVision by MF 0.4.8 - Camera - OCR detection Tesseract</div>
+<div>CustomVision by MF 0.4.9 - Camera - OCR detection Tesseract</div>
 <div>
   <div id="webcam-container"></div>
   <h3><ol id="prediction-list"></ol></h3>
@@ -87,6 +87,7 @@ button {
     context = canvas.getContext('2d');
     context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
 
+    list.empty();
     const { data: { text } } = await worker.recognize(webcam.canvas);
     list.append(`<li>OCR: ${text}</li>`);
 
