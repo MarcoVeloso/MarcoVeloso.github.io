@@ -13,6 +13,18 @@ async function load_model() {
     console.log( "Model loaded." );	
 }
 
+async function load_tesseract() {
+    const { createWorker } = Tesseract;
+    worker = createWorker({
+      workerPath: 'lib/tesseract/worker.min.js',
+      langPath: 'lib/tesseract',
+      corePath: 'lib/tesseract/tesseract-core.wasm.js',
+    });
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+}
+
 function print_predicts(target_class, probability, threshold=0.1){
 	if (probability >= threshold)
 		list.append(`<li>${target_class}: ${probability.toFixed(3)}</li>`);
@@ -146,94 +158,60 @@ async function predict_online(canvas) {
 
 }
 
-async function predict_ocr(canvas) {
+async function predict_ocr_online() {
 
-	// canvas.toBlob(function(blob){
+	list.empty();
+	list.append(`<li>OCR Online (Microsoft Vision)</li><li></li>`);
 
-		var blob = canvas.toDataURL();
+	canvas.toBlob(function(blob){
 
         $.ajax({
-            url: 'https://southcentralus.api.cognitive.microsoft.com/vision/v3.0/read/analyze',
-
-            beforeSend: function(jqXHR){
-                jqXHR.setRequestHeader("Content-Type","application/octet-stream");
-                jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", "35e4bf2c77a04d8ca756a27156393477");
-            },
-
+			url: 'https://southcentralus.api.cognitive.microsoft.com/vision/v3.0/read/analyze',
             type: "POST",
-            data: blob
-		})
-        .done(function(data, textStatus, jqXHR) {
+			data: blob,
+			contentType: false,
+			processData: false,
+			headers: {
+				"Content-Type":"application/octet-stream",
+				"Ocp-Apim-Subscription-Key":"35e4bf2c77a04d8ca756a27156393477"
+			},
 
-			console.log('done');
+			success: function(result,status,xhr){
+				var operationLocation = xhr.getResponseHeader("Operation-Location");
 
-            setTimeout(function () {
-				var operationLocation = jqXHR.getResponseHeader("Operation-Location");
-				
-				console.log(operationLocation);
+				setTimeout(function () {
 
-                $.ajax({
-                    url: operationLocation,
+					$.ajax({
+						url: operationLocation,
+						type: "GET",
+						headers: {
+							"Content-Type":"application/json",
+							"Ocp-Apim-Subscription-Key":"35e4bf2c77a04d8ca756a27156393477"
+						},
+			
+						success: function(result){
+							data = result.analyzeResult.readResults[0].lines;
 
-                    beforeSend: function(jqXHR){
-                        jqXHR.setRequestHeader("Content-Type","application/json");
-                        jqXHR.setRequestHeader("Ocp-Apim-Subscription-Key", "35e4bf2c77a04d8ca756a27156393477");
-                    },
+							for (let i in data)
+								list.append(`<li>${data[i].text}</li>`);
+						},
+					});
 
-                    type: "GET"
-                })
-                .done(function(data) {
-                    console.log(data);
-                });
+				}, 3000);
 
-            }, 5000);
-        });	
+			},
+		});
+	},'image/jpg');	
 
-		// let xhr = new XMLHttpRequest();
-		// xhr.open('POST', 'https://southcentralus.api.cognitive.microsoft.com/vision/v3.0/read/analyze');
-		// xhr.setRequestHeader("Content-Type", "application/octet-stream");
-		// xhr.setRequestHeader("Ocp-Apim-Subscription-Key", '35e4bf2c77a04d8ca756a27156393477');
-		// xhr.send(blob);
+}
+
+async function predict_ocr_local(image) {
+	list.empty();
+	list.append(`<li>OCR Local (Tesseract.js)</li><li></li>`);
 	
-		// xhr.onreadystatechange = function() {
-
-		// 	let operationLocation = this.getResponseHeader("Operation-Location");
-
-        //     setTimeout(function () {
-
-		// 		console.log(operationLocation);
-
-		// 		let xhr2 = new XMLHttpRequest();
-		// 		xhr2.open('GET', operationLocation);
-		// 		xhr2.setRequestHeader("Content-Type", "application/json");
-		// 		xhr2.setRequestHeader("Ocp-Apim-Subscription-Key", '35e4bf2c77a04d8ca756a27156393477');
+	const { data: { text } } = await worker.recognize(image);
 	
-		// 		xhr2.onreadystatechange = function(data) {
-		// 			console.log(data);
-		// 			if (this.readyState == 4 && this.status == 200) {
-	
-		// 				// console.log(this);
-		// 				// predictions = JSON.parse(this.responseText).predictions;
-		
-		// 				// predictions.sort(function (a, b) {
-		// 				// 	return b.probability - a.probability;
-		// 				// });
-		
-		// 				// console.log(predictions);
-						
-		// 				// predictions.forEach(function (p) {
-		// 				// 	if (p.probability > 0.1)
-		// 				// 		list.append(`<li>Online model: ${p.tagName}: ${p.probability.toFixed(6)}</li>`);
-		// 				// });	
-		// 			}
-		// 		}
-
-        //     }, 5000);
-
-		// };
-
-	// },'image/jpg');	
-
+    list.append(`<li>${text}</li>`);
 }
 
 async function predict_local(model, image) {
