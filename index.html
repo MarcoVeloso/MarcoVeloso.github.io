@@ -9,6 +9,7 @@ div {
 }
 
 ol {
+  list-style-type: none;
   width: 300px;
 }
 
@@ -22,14 +23,14 @@ button {
 }
 </style>
 
-<div>CustomVision by MF 0.5.0 - Camera - OCR detection Local x Online</div>
+<div>CustomVision by MF 0.5.1 - Camera - OCR detection Local x Online</div>
 <div>
   <div id="webcam-container"></div>
-  <h3><ul id="prediction-list"></ul></h3>
+  <h3><ol id="prediction-list"></ol></h3>
 </div>
 <div>
-  <button type="button" onclick="photo(true)">Foto Predição Local</button>
-  <button type="button" onclick="photo(false)">Foto Predição Online</button>
+  <button type="button" onclick="photo()">Foto em Cores</button>
+  <button type="button" onclick="photo(true)">Foto em Preto e Branco</button>
 </div>
 <canvas id="photo-canvas"></canvas> 
 
@@ -68,16 +69,16 @@ button {
     window.requestAnimationFrame(loop);
   }
 	
-  async function photo(local=true) { 
+  async function photo(greyscale=false) {
+    if (greyscale)
+      canvas.classList.add("greyscale");
+    else
+      canvas.classList.remove("greyscale");  
+
     context = canvas.getContext('2d');
     context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
 
-    if (local)
-      await predict_ocr_local(webcam.canvas);
-    else
-      await predict_ocr_online(webcam.canvas);
-
-    //await predict_ocr(canvas);
+    await predict_ocr(webcam.canvas);
     //await predict_online(canvas);
     //await predict_obj_detect(model, webcam.canvas);
   }

@@ -158,10 +158,14 @@ async function predict_online(canvas) {
 
 }
 
-async function predict_ocr_online() {
-
+async function predict_ocr(image) {
 	list.empty();
-	list.append(`<li>OCR Online (Microsoft Vision)</li><li></li>`);
+
+	await predict_ocr_local(image);
+	await predict_ocr_online();
+}
+
+async function predict_ocr_online() {
 
 	canvas.toBlob(function(blob){
 
@@ -192,6 +196,9 @@ async function predict_ocr_online() {
 						success: function(result){
 							data = result.analyzeResult.readResults[0].lines;
 
+							list.append(`<li>------------------------------</li>`)
+							list.append(`<li>OCR Online (Microsoft Vision)</li>`);
+
 							for (let i in data)
 								list.append(`<li>${data[i].text}</li>`);
 						},
@@ -206,12 +213,13 @@ async function predict_ocr_online() {
 }
 
 async function predict_ocr_local(image) {
-	list.empty();
-	list.append(`<li>OCR Local (Tesseract.js)</li><li></li>`);
+	list.append(`<li>OCR Local (Tesseract.js)</li>`);
 	
 	const { data: { text } } = await worker.recognize(image);
 	
-    list.append(`<li>${text}</li>`);
+	list.append(`<li>${text}</li>`);
+	
+	$("#responseTextArea").val(text);
 }
 
 async function predict_local(model, image) {
