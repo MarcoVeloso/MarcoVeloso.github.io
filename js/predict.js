@@ -41,7 +41,7 @@ async function predict(model, image) {
 		
 	let predictions = await model.predict(tensor).data();
 	
-	console.log(predictions);
+	// console.log(predictions);
 	
 	let top5 = Array.from(predictions)
 		.map(function (p, i) { // this is Array.map
@@ -87,17 +87,37 @@ async function predict_online(canvas) {
 
 }
 
+let pred_anterior, preds;
+
 async function predict_local(model, image) {
-	list.empty();
-	list.append(`<li>Custom Vision Model - Local</li>`);
-	list.append(`<li>----------------------------------------</li>`);
+	// list.empty();
+	// list.append(`<li>Custom Vision Model - Local</li>`);
+	// list.append(`<li>------------------------------------</li>`);
 
 	let top5 = await predict(model, image);
 
-	top5.forEach(function (p) {
-		if (p.probability > 0.1)
-			list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
-	});	
+	predClass = top5[0].className;
+	predProba = top5[0].probability.toFixed(2);
+
+	if (predClass != 'none' & predProba > 0.1) {
+		if (predClass == pred_anterior)
+			preds++;
+		else
+			preds = 0;
+	}
+
+
+	if (preds > 10) {
+		list.append(`<li>${predClass}: ${predProba}</li>`);
+		preds = 0;
+	}
+		
+	pred_anterior = predClass;	
+
+	// top5.forEach(function (p) {
+	// 	if (p.probability > 0.1)
+	// 		list.append(`<li>${p.className}: ${p.probability.toFixed(6)}</li>`);
+	// });	
 }
 
 async function predict_imagemfixa(model, imageID) {

@@ -23,7 +23,7 @@ button {
 }
 </style>
 
-<div>CustomVision by MF 0.6.0 - Camera - CV model local</div>
+<div>CustomVision by MF 0.6.1 - Camera - CV model local - Logic control</div>
 <div>
   <div id="webcam-container"></div>
   <h3><ol id="prediction-list"></ol></h3>
@@ -57,7 +57,7 @@ button {
 
   async function loop() {
     webcam.update();
-    //await predict_camera(model, webcam.canvas);
+    await predict_local(model, webcam.canvas);
     window.requestAnimationFrame(loop);
   }
 	
