@@ -1,12 +1,12 @@
 {
-  "DomainType": "ObjectDetection",
+  "DomainType": "Classification",
   "Platform": "TensorFlow",
   "Flavor": "TensorFlowJs",
   "ExporterVersion": "2.0",
-  "ExportedDate": "2020-08-07T15:59:35.2296511Z",
-  "IterationId": "6e0cf862-8e6f-42a1-8411-20c81b222545",
+  "ExportedDate": "2020-08-14T15:38:57.2786482Z",
+  "IterationId": "dbd0cad8-d675-49ff-ba03-23df0b7b703a",
   "ModelFileName": "model.zip",
   "LabelFileName": "labels.txt",
-  "ModelFileSHA1": "e25d57d381402fe3bc2e5a34c9d2e91dbf55c79b",
+  "ModelFileSHA1": "e251fe4a73666677fbd342be7482e97b096c5382",
   "SchemaVersion": "1.0"
 }

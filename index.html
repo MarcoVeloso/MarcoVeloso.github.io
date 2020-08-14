@@ -23,7 +23,7 @@ button {
 }
 </style>
 
-<div>CustomVision by MF 0.5.1 - Camera - OCR detection Local x Online</div>
+<div>CustomVision by MF 0.6.0 - Camera - CV model local</div>
 <div>
   <div id="webcam-container"></div>
   <h3><ol id="prediction-list"></ol></h3>
@@ -34,23 +34,18 @@ button {
 </div>
 <canvas id="photo-canvas"></canvas> 
 
-
-<script src="lib/jquery.min.js"></script>
 <script src="lib/tf.min.js"></script>
+<script src="lib/jquery-3.3.1.slim.min.js"></script>
 <script src="lib/teachablemachine-image.min.js"></script>
-<script src="js/predict.js"></script> 
-<script src='lib/tesseract/tesseract.min.js'></script>
-
+<script src="js/predict.js"></script > 
 
 <script type="text/javascript">
-  let webcam, model, list, canvas;
+  let webcam, model, list;
   let width=640, height=360;
-  let worker;
 
   $( document ).ready(async function () {
-    //await load_model();
-    await load_tesseract();
-
+    await load_model();
+ 
     webcam = new tmImage.Webcam(width, height, false); 
     await webcam.setup({ facingMode: "environment" });
     await webcam.play();
@@ -58,9 +53,6 @@ button {
 
     document.getElementById("webcam-container").appendChild(webcam.canvas);
     list = $("#prediction-list");
-    canvas = document.getElementById("photo-canvas");
-    canvas.width = width;
-    canvas.height = height;
   });
 
   async function loop() {
@@ -70,17 +62,21 @@ button {
   }
 	
   async function photo(greyscale=false) {
+    canvas = document.getElementById("photo-canvas");
+    canvas.width = width;
+    canvas.height = height;
+
     if (greyscale)
       canvas.classList.add("greyscale");
     else
       canvas.classList.remove("greyscale");  
 
+    list.empty();
+
     context = canvas.getContext('2d');
     context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
-
-    await predict_ocr(webcam.canvas);
     //await predict_online(canvas);
-    //await predict_obj_detect(model, webcam.canvas);
+    await predict_local(model, webcam.canvas);
   }
 
 </script>
