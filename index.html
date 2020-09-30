@@ -1,86 +1,20 @@
-<style>
-* {
-  box-sizing: border-box;
+<!DOCTYPE html>
+<html>
+<body>
+
+<div id="result"></div>
+
+<script>
+// Check browser support
+if (typeof(Storage) !== "undefined") {
+  // Store
+  localStorage.setItem("lastname", "Teste será que vai dar certo?");
+  // Retrieve
+  document.getElementById("result").innerHTML = localStorage.getItem("lastname");
+} else {
+  document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
 }
-
-div {
-  display: flex;
-  margin: 5px;
-}
-
-ol {
-  list-style-type: none;
-  width: 300px;
-}
-
-button {
-  height: 50px;
-  margin: 5px;
-}
-
-.greyscale {
-  filter: grayscale(100%);
-}
-</style>
-
-<div>CustomVision by MF 0.5.1 - Camera - OCR detection Local x Online</div>
-<div>
-  <div id="webcam-container"></div>
-  <h3><ol id="prediction-list"></ol></h3>
-</div>
-<div>
-  <button type="button" onclick="photo()">Foto em Cores</button>
-  <button type="button" onclick="photo(true)">Foto em Preto e Branco</button>
-</div>
-<canvas id="photo-canvas"></canvas> 
-
-
-<script src="lib/jquery.min.js"></script>
-<script src="lib/tf.min.js"></script>
-<script src="lib/teachablemachine-image.min.js"></script>
-<script src="js/predict.js"></script> 
-<script src='lib/tesseract/tesseract.min.js'></script>
-
-
-<script type="text/javascript">
-  let webcam, model, list, canvas;
-  let width=640, height=360;
-  let worker;
-
-  $( document ).ready(async function () {
-    //await load_model();
-    await load_tesseract();
-
-    webcam = new tmImage.Webcam(width, height, false); 
-    await webcam.setup({ facingMode: "environment" });
-    await webcam.play();
-    window.requestAnimationFrame(loop);
-
-    document.getElementById("webcam-container").appendChild(webcam.canvas);
-    list = $("#prediction-list");
-    canvas = document.getElementById("photo-canvas");
-    canvas.width = width;
-    canvas.height = height;
-  });
-
-  async function loop() {
-    webcam.update();
-    //await predict_camera(model, webcam.canvas);
-    window.requestAnimationFrame(loop);
-  }
-	
-  async function photo(greyscale=false) {
-    if (greyscale)
-      canvas.classList.add("greyscale");
-    else
-      canvas.classList.remove("greyscale");  
-
-    context = canvas.getContext('2d');
-    context.drawImage(webcam.canvas, 0, 0, canvas.width, canvas.height);
-
-    await predict_ocr(webcam.canvas);
-    //await predict_online(canvas);
-    //await predict_obj_detect(model, webcam.canvas);
-  }
-
 </script>
+
+</body>
+</html>
