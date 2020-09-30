@@ -1,20 +1,77 @@
 <!DOCTYPE html>
-<html>
-<body>
+<html> 
 
-<div id="result"></div>
+<style>
+  textarea {
+      padding: 10px;
+      line-height: 1.5;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-shadow: 1px 1px 1px #999;
+      margin-bottom: 10px;
+  }
 
+  label {
+      display: block;
+      margin-bottom: 10px;
+  }  
+
+  button {
+      display: block;
+  }  
+</style>
+
+<script src="jquery.min.js"></script>    
 <script>
-// Check browser support
-if (typeof(Storage) !== "undefined") {
-  // Store
-  localStorage.setItem("lastname", "Teste será que vai dar certo?");
-  // Retrieve
-  document.getElementById("result").innerHTML = localStorage.getItem("lastname");
-} else {
-  document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
-}
+  getData();
+
+  function getData() {
+    let settings = {
+      "async": true,
+      "crossDomain": true,
+      "url": "https://clipboard-dc71.restdb.io/rest/clip/5f74d023d279373c003b725a",
+      "method": "GET",
+      "headers": {
+        "content-type": "application/json",
+        "x-apikey": "5f74d0f62b02c84b29bf85c3",
+        "cache-control": "no-cache"
+      }
+    } 
+                  
+    $.ajax(settings).done(function (response) {
+      $("#clipboard").val(response.clip_area);
+    });        
+  }
+
+  function update() {
+    let texto = $("#clipboard").val();
+    let jsondata = {"clip_area": texto};
+    let settings = {
+      "async": true,
+      "crossDomain": true,
+      "url": "https://clipboard-dc71.restdb.io/rest/clip/5f74d023d279373c003b725a",
+      "method": "PUT",
+      "headers": {
+        "content-type": "application/json",
+        "x-apikey": "5f74d0f62b02c84b29bf85c3",
+        "cache-control": "no-cache"
+      },
+      "processData": false,
+      "data": JSON.stringify(jsondata)
+    }
+    
+    $.ajax(settings).done(function (response) {
+      console.log('Ok!');
+    });
+  }
 </script>
 
+<body>
+  <label for="clipboard">XClipboard by MF</label>
+
+  <textarea id="clipboard" name="clipboard" rows="10" cols="100">  
+  </textarea>  
+
+  <button onclick="update()">Salvar</button>
 </body>
 </html>
