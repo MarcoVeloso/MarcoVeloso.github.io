@@ -9,6 +9,7 @@
       border: 1px solid #ccc;
       box-shadow: 1px 1px 1px #999;
       margin-bottom: 10px;
+      display: block;
   }
 
   label {
@@ -17,12 +18,13 @@
   }  
 
   button {
-      display: block;
+    margin-right: 10px;
   }  
 </style>
 
 <script src="jquery.min.js"></script>    
 <script>
+
   getData();
 
   function getData() {
@@ -67,11 +69,12 @@
 </script>
 
 <body>
-  <label for="clipboard">XClipboard by MF 0.2</label>
+  <label for="clipboard">XClipboard by MF 0.3</label>
 
   <textarea id="clipboard" name="clipboard" rows="20" cols="100">  
   </textarea>  
 
+  <button onclick="getData()">Atualizar</button>
   <button onclick="update()">Salvar</button>
 </body>
 </html>
