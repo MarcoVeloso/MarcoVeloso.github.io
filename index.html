@@ -52,6 +52,8 @@
   getData();
 
   function getData() {
+    $('#clipboard').prop('disabled', true);
+
     let settings = {
       "async": true,
       "crossDomain": true,
@@ -65,6 +67,7 @@
     } 
                   
     $.ajax(settings).done(function (response) {
+      $('#clipboard').prop('disabled', false);
       $("#clipboard").val(response.clip_area);
     });        
   }
@@ -93,7 +96,7 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF 0.5</label>
+  <label for="clipboard">PowerClip by MF 0.6</label>
 
   <textarea id="clipboard" name="clipboard" rows="20" cols="100"></textarea>  
  
