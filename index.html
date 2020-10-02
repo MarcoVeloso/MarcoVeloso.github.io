@@ -26,18 +26,23 @@
   $(document).ready(function() {
 
     $(window).focus(function() {
+      let now = new Date(Date.now()).toLocaleString();
+
+      $("#status").text("Refreshing data...");
       getData();
+      $("#status").text("Refreshed data at " + now);
     });
 
-    $("#clipboard").on('input', function(){
-     
+    $("#clipboard").on('input', function(){     
       if(qr_timeout != null)
         clearTimeout(qr_timeout);
 
       qr_timeout = setTimeout(function(){
         let now = new Date(Date.now()).toLocaleString();
+        
+        $("#status").text("Autosaving...");
         update();
-        $("#autosaved").text("Autosaved at " + now);
+        $("#status").text("Autosaved at " + now);
       }, 2000);
 
     });
@@ -92,6 +97,6 @@
 
   <textarea id="clipboard" name="clipboard" rows="20" cols="100"></textarea>  
  
-  <p id="autosaved"></p>
+  <p id="status"></p>
 </body>
 </html>
