@@ -16,14 +16,33 @@
       display: block;
       margin-bottom: 10px;
   }  
-
-  button {
-    margin-right: 10px;
-  }  
 </style>
 
 <script src="jquery.min.js"></script>    
 <script>
+
+  var qr_timeout = null;
+
+  $(document).ready(function() {
+
+    $(window).focus(function() {
+      getData();
+    });
+
+    $("#clipboard").on('input', function(){
+     
+      if(qr_timeout != null)
+        clearTimeout(qr_timeout);
+
+      qr_timeout = setTimeout(function(){
+        let now = new Date(Date.now()).toLocaleString();
+        update();
+        $("#autosaved").text("Autosaved at " + now);
+      }, 2000);
+
+    });
+
+  });
 
   getData();
 
@@ -69,12 +88,10 @@
 </script>
 
 <body>
-  <label for="clipboard">XClipboard by MF 0.3</label>
+  <label for="clipboard">PowerClip by MF 0.5</label>
 
-  <textarea id="clipboard" name="clipboard" rows="20" cols="100">  
-  </textarea>  
-
-  <button onclick="getData()">Atualizar</button>
-  <button onclick="update()">Salvar</button>
+  <textarea id="clipboard" name="clipboard" rows="20" cols="100"></textarea>  
+ 
+  <p id="autosaved"></p>
 </body>
 </html>
