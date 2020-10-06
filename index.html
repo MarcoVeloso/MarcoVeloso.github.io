@@ -71,8 +71,13 @@
     } 
                   
     $.ajax(settings).done(function (response) {
+      let texto = response.clip_area;
+
+      if(texto)
+        texto = texto + '\n\n';
+        
       $('#clipboard').prop('disabled', false);
-      $("#clipboard").val(response.clip_area);
+      $("#clipboard").focus().val(texto);
     });        
   }
 
@@ -100,7 +105,7 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF 0.6</label>  
+  <label for="clipboard">PowerClip by MF 0.7</label>  
   
   <textarea id="clipboard" name="clipboard" rows="20" cols="100"></textarea>  
 
