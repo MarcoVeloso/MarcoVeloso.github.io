@@ -81,7 +81,7 @@
         links = texto.match(/([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?/gm);
 
         links.forEach((link, index) => {
-          $("div").append('<p><a href="' + link + '">Link ' + index + '</a>');
+          $("div").append('<p><a target="_blank" href="' + link + '">Link ' + index + '</a>');
         });  
 
         texto = texto + '\n';
