@@ -78,10 +78,10 @@
       $("div").empty();
 
       if(texto) {
-        links = texto.match(/([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?/gm);
+        links = texto.match(/([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?/gm);        
 
-        links.forEach((link, index) => {
-          $("div").append('<p><a target="_blank" href="' + link + '">Link ' + index+1 + '</a>');
+        links.forEach((link, index) => {          
+          $("div").append('<p><a target="_blank" href="' + link + '">Link ' + (index+1) + '</a>');
         });  
 
         texto = texto + '\n';
