@@ -75,7 +75,9 @@
       $("#links").empty();
 
       if(texto) {
-        links = texto.match(/([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?/gm);        
+        pattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gm
+        
+        links = texto.match(pattern);        
 
         links.forEach((link, index) => {          
           $("#links").append('<p><a target="_blank" href="' + link + '">Link ' + (index+1) + '</a>');
