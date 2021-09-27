@@ -2,6 +2,10 @@
 <html> 
 
 <style>
+  #clipboard_area {
+    float: left;
+  }
+
   textarea {
     padding: 10px;
     line-height: 1.5;
@@ -9,7 +13,6 @@
     border: 1px solid #ccc;
     box-shadow: 1px 1px 1px #999;
     margin-bottom: 10px;
-    float: left;
   }
 
   div {
@@ -40,25 +43,19 @@
       getData();      
     });
 
-    $("#clipboard").on('input', function(){     
-      if(qr_timeout != null)
-        clearTimeout(qr_timeout);
-
-      qr_timeout = setTimeout(function(){
-        let now = new Date(Date.now()).toLocaleString('pt-BR');
-
-        $("#status").text("Autosaving...");
-        update();
-        $("#status").text("Autosaved at " + now);
-      }, 2000);
-
-    });
-
   });  
+
+  function save() {
+    let now = new Date(Date.now()).toLocaleString('pt-BR');
+
+    $("#status").text("Saving...");
+    update();
+    $("#status").text("Saved at " + now);
+  }
 
   function getData() {
     $('#refresh').show();
-    $('#clipboard').hide();
+    $('#clipboard_area').hide();    
 
     let settings = {
       "async": true,
@@ -75,19 +72,19 @@
     $.ajax(settings).done(function (response) {
       let texto = response.clip_area;
 
-      $("div").empty();
+      $("#links").empty();
 
       if(texto) {
         links = texto.match(/([\w+]+\:\/\/)?([\w\d-]+\.)*[\w-]+[\.\:]\w+([\/\?\=\&\#.]?[\w-]+)*\/?/gm);        
 
         links.forEach((link, index) => {          
-          $("div").append('<p><a target="_blank" href="' + link + '">Link ' + (index+1) + '</a>');
+          $("#links").append('<p><a target="_blank" href="' + link + '">Link ' + (index+1) + '</a>');
         });  
 
         texto = texto + '\n';
       }                  
         
-      $('#clipboard').show();
+      $('#clipboard_area').show();
       $('#refresh').hide();
       $("#clipboard").val(texto);
     });        
@@ -117,14 +114,19 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.0</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 1.1</label>  
   
-  <textarea id="clipboard" name="clipboard" rows="20" cols="80"></textarea>  
+  <div id="clipboard_area">
+    <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
+    <p>
+      <input id="save_button" type="button" value="Save" onclick="save()">  
+      <p id="status"></p>
+    </p>     
+  </div>  
 
   <div id="links"></div>
 
   <p id="refresh">Loading data...</p>
-
-  <p id="status"></p>
+  
 </body>
 </html>
