@@ -56,6 +56,7 @@
   function getData() {
     $('#refresh').show();
     $('#clipboard_area').hide();    
+    $('#links').hide();    
 
     let settings = {
       "async": true,
@@ -87,6 +88,7 @@
       }                  
         
       $('#clipboard_area').show();
+      $('#links').show();    
       $('#refresh').hide();
       $("#clipboard").val(texto);
     });        
