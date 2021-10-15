@@ -58,12 +58,25 @@
 
     if(texto) {
       let pattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gm
-      
-      let links = texto.match(pattern);        
 
-      links.forEach((link, index) => {          
-        $("#links").append('<p><a target="_blank" href="' + link + '">Link ' + (index+1) + '</a>');
-      });        
+      let linhas = texto.split('\n');
+
+      linhas.forEach((linha, index) => {  
+        let link = '';
+
+        let nome = linha.replace(pattern, (match) => { 
+          link = match;
+          return '';
+        });        
+
+        if (link) {
+
+          if (!nome)  
+            nome = link.substr(8,10);
+
+          $("#links").append('<p><a target="_blank" href="' + link + '">' + nome + '</a>');
+        }                  
+      });
     }  
   }
 
@@ -119,7 +132,7 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.3</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 1.4</label>  
   
   <div id="clipboard_area">
     <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
