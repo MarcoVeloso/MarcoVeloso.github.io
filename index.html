@@ -39,9 +39,9 @@
 
     getData();
 
-    $(window).focus(function() {      
-      getData();      
-    });
+    // $(window).focus(function() {      
+    //   getData();      
+    // });
 
   });  
 
@@ -52,6 +52,13 @@
     update();
     $("#status").text("Saved at " + now);
   }
+
+  function removeLink(link_text) {
+    let texto = $("#clipboard").val();
+    texto = texto.replace(link_text,'')
+    $("#clipboard").val(texto);
+    update();
+  }  
 
   function createLinks(texto) {
     $("#links").empty();
@@ -74,7 +81,8 @@
           if (!nome)  
             nome = link.substr(8,10);
 
-          $("#links").append('<p><a target="_blank" href="' + link + '">' + nome + '</a>');
+          $("#links").append('<a target="_blank" href="' + link + '">' + nome + '</a>');
+          $("#links").append('<input type="button" value="X" onclick="removeLink(\'' + linha + '\')" /><p>');          
         }                  
       });
     }  
@@ -132,7 +140,7 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.4</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 1.5</label>  
   
   <div id="clipboard_area">
     <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
