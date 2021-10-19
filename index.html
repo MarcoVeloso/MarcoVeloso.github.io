@@ -33,8 +33,6 @@
 <script src="jquery.min.js"></script>    
 <script>
 
-  var qr_timeout = null;
-
   $(document).ready(function() {
 
     getData();
@@ -44,6 +42,14 @@
     });
 
   });  
+
+  function addwapp() {
+    let numero = $("#clipboard").val().split('\n')[0];
+
+    let url = 'https://api.whatsapp.com/send/?phone=5561' + numero + '&text&app_absent=0';
+
+    window.open(url,'_blank');        
+  }  
 
   function save() {
     let now = new Date(Date.now()).toLocaleString('pt-BR');
@@ -140,12 +146,13 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.5</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 1.6</label>  
   
   <div id="clipboard_area">
     <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
     <p>
       <input id="save_button" type="button" value="Save" onclick="save()">  
+      <input id="addwapp_button" type="button" value="Addwapp" onclick="addwapp()">  
       <p id="status"></p>
     </p>     
   </div>  
