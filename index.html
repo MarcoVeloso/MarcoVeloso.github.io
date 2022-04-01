@@ -34,13 +34,7 @@
 <script>
 
   $(document).ready(function() {
-
     getData();
-
-    $(window).focus(function() {      
-      getData();      
-    });
-
   });  
 
   function addwapp() {
@@ -63,7 +57,7 @@
     let texto = $("#clipboard").val();
     texto = texto.replace(link_text,'')
     $("#clipboard").val(texto);
-    update();
+    save();
   }  
 
   function createLinks(texto) {
@@ -146,7 +140,7 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.6</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 1.7</label>  
   
   <div id="clipboard_area">
     <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
