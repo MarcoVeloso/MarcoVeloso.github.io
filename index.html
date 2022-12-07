@@ -40,7 +40,9 @@
   function addwapp() {
     let numero = $("#clipboard").val().split('\n')[0];
 
-    let url = 'https://api.whatsapp.com/send/?phone=5561' + numero + '&text&app_absent=0';
+    numero = numero.replace(/\D/g, '');
+
+    let url = 'https://api.whatsapp.com/send/?phone=' + numero + '&text=Ola&app_absent=0';    
 
     window.open(url,'_blank');        
   }  
@@ -140,7 +142,7 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.7</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 1.8</label>  
   
   <div id="clipboard_area">
     <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
