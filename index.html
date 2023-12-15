@@ -78,6 +78,11 @@
           return '';
         });        
 
+        if (nome.includes("magnet:?xt")){
+          link = nome.split(' ')[1];
+          nome = nome.split(' ')[0];
+        }
+
         if (link) {
 
           if (!nome)  
@@ -142,13 +147,13 @@
 </script>
 
 <body>
-  <label for="clipboard">PowerClip by MF (Marcommand) 1.8</label>  
+  <label for="clipboard">PowerClip by MF (Marcommand) 2.0</label>  
   
   <div id="clipboard_area">
     <textarea id="clipboard" name="clipboard" rows="15" cols="80"></textarea> 
     <p>
       <input id="save_button" type="button" value="Save" onclick="save()">  
-      <input id="addwapp_button" type="button" value="Addwapp" onclick="addwapp()">  
+      <!-- <input id="addwapp_button" type="button" value="Addwapp" onclick="addwapp()">   -->
       <p id="status"></p>
     </p>     
   </div>  
